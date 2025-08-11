@@ -17,18 +17,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
   };
 
-  const badgeStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 8,
-    left: 8,
-    padding: "4px 8px",
-    background: "#000",
-    color: "#fff",
-    fontSize: 12,
-    zIndex: 9999,
-    borderRadius: 4,
-  };
-
   const mainStyle: React.CSSProperties = {
     maxWidth: 1100,
     margin: "0 auto",
@@ -38,8 +26,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body style={bodyStyle}>
-        {/* Student number badge */}
-        
+        {/* Remember last visited page path on navigation */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                try {
+                  var set = function(name, value, days){
+                    var d = new Date();
+                    d.setTime(d.getTime() + (days*24*60*60*1000));
+                    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/';
+                  };
+                  set('lastMenu', location.pathname, 30);
+                  var pushState = history.pushState;
+                  history.pushState = function(){
+                    pushState.apply(this, arguments);
+                    set('lastMenu', location.pathname, 30);
+                  };
+                  window.addEventListener('popstate', function(){
+                    set('lastMenu', location.pathname, 30);
+                  });
+                } catch(e){}
+              })();
+            `,
+          }}
+        />
 
         {/* theme tokens (used by ThemeToggle later) */}
         <style
