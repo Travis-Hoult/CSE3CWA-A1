@@ -60,6 +60,7 @@ export default function ThemeToggle() {
         }}
         disabled
       >
+        🌓
       </button>
     );
   }
