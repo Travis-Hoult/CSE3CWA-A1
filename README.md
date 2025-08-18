@@ -40,12 +40,12 @@ The app will run on:
 
 ## 🧩 Features Implemented
 
-### 1. 🎨 Theme Support (3 marks)
+### 1. 🎨 Theme Support
 - Light mode and dark mode
 - Toggle component to switch between themes
 - CSS variables used to manage theme states
 
-### 2. 🧽 Navigation UI (4 marks)
+### 2. 🧽 Navigation UI
 - Header and footer
 - Top navigation tabs:
   - Tabs
@@ -55,7 +55,7 @@ The app will run on:
   - About
 - Hamburger menu for mobile view (with CSS transform)
 
-### 3. 🧱 Tab Builder (6 marks)
+### 3. 🧱 Tab Builder
 - Add/remove up to 15 tabs
 - Edit tab titles and content
 - Store tabs in `localStorage`
@@ -64,7 +64,7 @@ The app will run on:
   - Clean HTML with only inline styles
   - Tabs that function in a standalone `.html` file
 
-### 4. 🖥 GitHub Version Control (3 marks)
+### 4. 🖥 GitHub Version Control
 - ✅ `main` branch + 3 feature branches:
   - `feature/theme-toggle`
   - `feature/tabs-builder`
