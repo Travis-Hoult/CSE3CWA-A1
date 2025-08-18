@@ -1,21 +1,19 @@
 "use client";
+import Link from "next/link";
 import Menu from "./Menu";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
-  const bar: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
+  const outerWrap: React.CSSProperties = {
+    display: "grid",
+    gap: 8,
     padding: "10px 16px",
+    borderBottom: "1px solid #ccc",
   };
 
-  const left: React.CSSProperties = {
+  const badgeRow: React.CSSProperties = {
     display: "flex",
-    alignItems: "center",
-    gap: 12,
-    minWidth: 0,
+    justifyContent: "flex-start",
   };
 
   const badge: React.CSSProperties = {
@@ -27,29 +25,60 @@ export default function Header() {
     whiteSpace: "nowrap",
   };
 
-  const title: React.CSSProperties = {
-    fontWeight: 600,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+  const titleRow: React.CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
   };
 
-  const right: React.CSSProperties = {
+  const title: React.CSSProperties = {
+    fontWeight: 600,
+    fontSize: 18,
+    whiteSpace: "nowrap",
+    textAlign: "center",
+  };
+
+  const navBar: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 12,
+  };
+
+  const navLinks: React.CSSProperties = {
+    display: "flex",
+    gap: 16,
+    flexWrap: "wrap",
+    fontSize: 14,
+  };
+
+  const rightControls: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
     gap: 8,
   };
 
   return (
-    <header style={bar}>
-      <div style={left}>
+    <header style={outerWrap}>
+      <div style={badgeRow}>
         <span style={badge}>Student #20221016</span>
+      </div>
+      <div style={titleRow}>
         <div style={title}>CSE3CWA — Assignment 1</div>
       </div>
-      <div style={right}>
-        <ThemeToggle />
-        <Menu />
+      <div style={navBar}>
+        <nav style={navLinks}>
+          <Link href="/">Tabs</Link>
+          <Link href="/prelab">Pre-lab Questions</Link>
+          <Link href="/escape">Escape Room</Link>
+          <Link href="/races">Coding Races</Link>
+          <Link href="/about">About</Link>
+        </nav>
+        <div style={rightControls}>
+          <ThemeToggle />
+          <Menu />
+        </div>
       </div>
     </header>
   );
 }
-
