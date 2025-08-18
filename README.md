@@ -27,7 +27,7 @@ The app features:
 ### Setup:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/cse3cwa-a1.git
+git clone https://github.com/travis-hoult/cse3cwa-a1.git
 cd cse3cwa-a1
 npm install
 npm run dev
