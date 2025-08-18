@@ -116,7 +116,3 @@ To generate HTML from tabs:
 
 ---
 
-## ✅ Submission Ready
-
-All assignment requirements have been implemented.  
-Final code is committed, tagged, and documented.
