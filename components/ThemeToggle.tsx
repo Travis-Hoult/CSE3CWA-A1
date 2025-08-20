@@ -81,7 +81,7 @@ export default function ThemeToggle() {
         cursor: "pointer",
       }}
     >
-      {theme === "light" ? "🌞" : "🌙"}
+      {theme === "light" ? "🌙" : "🌞"}
     </button>
   );
 }

@@ -72,7 +72,7 @@ export default function Header() {
           <Link href="/prelab">Pre-lab Questions</Link>
           <Link href="/escape">Escape Room</Link>
           <Link href="/races">Coding Races</Link>
-          <Link href="/about">About</Link>
+        
         </nav>
         <div style={rightControls}>
           <ThemeToggle />

@@ -1,7 +1,8 @@
+// components/Menu.tsx
 "use client";
 
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { setCookie, getCookie } from "@/lib/cookies";
 
 export default function Menu() {
@@ -34,12 +35,14 @@ export default function Menu() {
 
   const buttonStyle: React.CSSProperties = {
     padding: "8px 10px",
-    border: "1px solid #ccc",
+    border: "none",                 // no border (per your request)
     background: "var(--card)",
     borderRadius: 8,
     cursor: "pointer",
-    transform: open ? "rotate(90deg)" : "rotate(0deg)", // tiny transform to show state
+    transform: open ? "rotate(90deg)" : "rotate(0deg)",
     transition: "transform 120ms ease",
+    color: "var(--fg)",             // hamburger glyph follows theme
+    lineHeight: 0,
   };
 
   const listStyle: React.CSSProperties = {
@@ -73,22 +76,25 @@ export default function Menu() {
   return (
     <div style={{ position: "relative" }} ref={menuRef}>
       <button
+        id="menu-button"
         ref={btnRef}
         aria-label="Open menu"
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls="mainnav"
-        onClick={() => setOpen(v => !v)}
+        onClick={() => setOpen((v) => !v)}
         style={buttonStyle}
       >
-        ☰
+        {/* Hamburger glyph inherits color via currentColor (button's color) */}
+        <span aria-hidden="true" style={{ fontSize: 20 }}>☰</span>
       </button>
 
-      <nav id="mainnav" style={listStyle} role="menu" aria-labelledby="menu-button">
-        <Link href="/" role="menuitem" style={linkStyle("/")} onClick={() => handleNav("/")}>
+      {/* Plain nav semantics (no menu roles) */}
+      <nav id="mainnav" aria-labelledby="menu-button" style={listStyle}>
+        <Link href="/" style={linkStyle("/")} onClick={() => handleNav("/")}>
           Home
         </Link>
-        <Link href="/about" role="menuitem" style={linkStyle("/about")} onClick={() => handleNav("/about")}>
+        <Link href="/about" style={linkStyle("/about")} onClick={() => handleNav("/about")}>
           About
         </Link>
       </nav>
