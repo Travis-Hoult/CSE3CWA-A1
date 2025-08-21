@@ -1,118 +1,80 @@
-# CSE3CWA — Assignment 1 (Frontend App)
+# CSE3CWA / CSE5006 – Assignment 1  
 
-**Student:** Travis Hoult  
-**Student ID:** 20221016  
+## Project Overview  
+This project is a **front-end web application** built with **Next.js (React + TypeScript)**.  
+It demonstrates the use of:  
+- React components  
+- State management (`useState`, `useEffect`)  
+- Dynamic rendering  
+- Local storage for persistence  
+- Modularised component design  
 
----
-
-## 📌 Overview
-
-This is a front-end application built with **Next.js 14 (App Router)** using **TypeScript**.  
-It fulfills the requirements of Assignment 1 for the CSE3CWA subject at La Trobe University.
-
-The app features:
-- A responsive user interface
-- Tab creation and management
-- Theme toggling (dark/light mode)
-- HTML output generation using only inline styles
+The assignment implements a **tabs builder interface** that allows the user to create, edit, and manage content in a structured way.  
 
 ---
 
-## 🚀 How to Run the App
-
-### Requirements:
-- Node.js 18+
-- npm or yarn
-
-### Setup:
-
-```bash
-git clone https://github.com/travis-hoult/cse3cwa-a1.git
-cd cse3cwa-a1
-npm install
-npm run dev
-```
-
-The app will run on:  
-📍 `http://localhost:3000`
+## Tech Stack  
+- **Next.js 14** (React framework)  
+- **TypeScript**  
+- **Bootstrap** (for styling and layout)  
+- **LocalStorage** (to persist state between refreshes)  
 
 ---
 
-## 🧩 Features Implemented
+## How to Run the Project  
 
-### 1. 🎨 Theme Support
-- Light mode and dark mode
-- Toggle component to switch between themes
-- CSS variables used to manage theme states
+1. Navigate to the project folder:  
+   ```bash
+   cd cse3cwa-a1
+   ```
 
-### 2. 🧽 Navigation UI
-- Header and footer
-- Top navigation tabs:
-  - Tabs
-  - Pre-lab Questions
-  - Escape Room
-  - Coding Races
-  - About
-- Hamburger menu for mobile view (with CSS transform)
+2. Install dependencies:  
+   ```bash
+   npm install
+   ```
 
-### 3. 🧱 Tab Builder
-- Add/remove up to 15 tabs
-- Edit tab titles and content
-- Store tabs in `localStorage`
-- Each tab shows its own content panel
-- Output generator produces:
-  - Clean HTML with only inline styles
-  - Tabs that function in a standalone `.html` file
+3. Start the development server:  
+   ```bash
+   npm run dev
+   ```
 
-### 4. 🖥 GitHub Version Control
-- ✅ `main` branch + 3 feature branches:
-  - `feature/theme-toggle`
-  - `feature/tabs-builder`
-  - `feature/navigation-bar`
-- ✅ Several commits per feature
-- ✅ `.gitignore` excludes `node_modules`
-- ✅ This `README.md` documents the project
+4. Open in your browser:  
+   ```
+   http://localhost:3000
+   ```
 
 ---
 
-## 🛠 Technologies Used
+## Features and Assignment Requirements  
 
-- [Next.js 14 (App Router)](https://nextjs.org/)
-- TypeScript
-- CSS-in-JS (inline styles)
-- React (Hooks API)
-- Browser localStorage
+The following table shows how the assignment requirements have been met in this project:  
 
----
-
-## 📁 Folder Structure
-
-```
-/app          → App Router pages (e.g., /, /about, /races)
-/components   → Header, Footer, Menu, ThemeToggle
-/lib          → Utility functions (e.g., localStorage logic)
-/public       → Static assets (e.g., favicon)
-/styles       → Global CSS
-```
+| Requirement | Implementation |
+|-------------|----------------|
+| **User Interface** (Nav Bar, Header, Footer, About Page) | Implemented: `Menu.tsx` (Hamburger Navigation Bar), `Header.tsx`, `Footer.tsx`, and an `About` page with project details. |
+| **Themes** (Dark/Light mode) | Implemented using a `ThemeToggle.tsx` component. Users can switch between Dark Mode and Light Mode. |
+| **Hamburger/Kebab Menu with CSS Transform** | Implemented as `Menu.tsx` (Hamburger Menu). Includes CSS transitions and transforms for open/close animation. |
+| **Tabs Page (Operations)** | `TabsBuilder.tsx` allows: up to 15 tabs, tab headings to be renamed, content to be updated, and tabs persisted in `localStorage`. |
+| **Output Button** | An `OutputButton.tsx` generates inline-only HTML + CSS output that can be pasted into a standalone HTML file. Matches the examples demonstrated in lectures. |
+| **GitHub** | Several commits made across development. Feature branches created (e.g., `hamburger-menu`). `node_modules` excluded via `.gitignore`. `README.md` updated and includes AI Acknowledgement. |
 
 ---
 
-## 📦 How to Build Output
+## AI Acknowledgement  
 
-To generate HTML from tabs:
+Artificial Intelligence (AI) tools were used throughout the development of this assignment **as a learning assistant**.  
+The use of AI was limited to support the **understanding and application of coding concepts** and to provide guidance where I was stuck.  
 
-1. Visit the **Tabs** page.
-2. Create and fill out your tabs.
-3. Click **Generate Output**.
-4. Copy and paste the HTML into a `.html` file to run it standalone.
+Specifically, AI was used for:  
+- **Code Correction and Editing** – reviewing and suggesting improvements for syntax, structure, and React/Next.js best practices.  
+- **Assignment Planning and Scheduling** – breaking down tasks and deliverables into manageable steps.  
+- **Formatting and Commenting Consistency and Clarity** – making the codebase and documentation easier to read.  
+- **Concept Development** – discussing possible approaches to features (e.g. tabs builder, state handling, output handling).  
+- **Tracking of Deliverables** – ensuring progress was aligned with assignment requirements and deadlines.  
 
----
-
-## 📚 Notes
-
-- No external CSS frameworks or class-based styles used.
-- Output is compliant with the requirement: **"inline styles only"**.
-- All UI is responsive and accessible.
+AI was **not used to generate the entire solution**. All final design decisions, code implementation, testing, and submission are my own work. AI supported my **learning process**, similar to a tutor or peer mentor, by providing suggestions and clarifications.  
 
 ---
 
+## License  
+This project is for **educational purposes only** as part of CSE3CWA / CSE5006 coursework.  

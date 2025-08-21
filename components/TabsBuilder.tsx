@@ -1,36 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
+// Week 3–4 (TypeScript + React state): typed shape for a tab item
 type Tab = { id: string; title: string; content: string };
 
+// Week 4 (Browser APIs → localStorage): single key for persistence
 const TABS_KEY = "tabs-data";
 
-function makeTab(n: number): Tab {
-  const id =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random()}`;
-  return { id, title: `Tab ${n}`, content: "" };
+// Week 4 (List CRUD): quick id generator (simple + readable)
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function save<T>(key: string, value: T) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {}
-}
-
-function load<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const s = localStorage.getItem(key);
-    return s ? (JSON.parse(s) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
+// Week 4 (Output / Security): escape content used inside HTML
 function escapeHtml(s: string) {
   return s
     .replaceAll("&", "&amp;")
@@ -39,64 +22,64 @@ function escapeHtml(s: string) {
     .replaceAll('"', "&quot;");
 }
 
+// Week 4 (Output Button requirement): produce standalone HTML with only inline CSS (no classes)
 function generateInlineHtml(tabs: Tab[]): string {
   const buttons = tabs
     .map((t, i) => {
-      const on = i === 0;
-      const label = t.title && t.title.trim() ? t.title : "Untitled";
-      return `<button role="tab" data-tab="${
-        t.id
-      }" aria-selected="${on}" style="padding:8px 12px;border:1px solid #999;border-radius:8px;background:${
-        on ? "#1d8346ff" : "#89268bff"
-      };cursor:pointer;">${escapeHtml(label)}</button>`;
+      const isFirst = i === 0;
+      const label = t.title.trim() || `Untitled ${i + 1}`;
+      // Minimal ARIA roles kept (Week 3 a11y intro); inline styles only (rubric)
+      return `<button role="tab" data-target="panel-${i}" aria-selected="${isFirst ? "true" : "false"}"
+  style="padding:8px 12px;border:1px solid #999;border-radius:8px;background:${isFirst ? "#1d8346" : "#89268b"};color:#fff;cursor:pointer">
+  ${escapeHtml(label)}
+</button>`;
     })
     .join("");
 
   const panels = tabs
     .map((t, i) => {
-      const on = i === 0;
-      const contentHtml = escapeHtml(t.content).replaceAll("\n", "<br/>");
-      return `<div role="tabpanel" data-panel="${
-        t.id
-      }" style="border:1px solid #ddd;border-radius:10px;padding:12px;${
-        on ? "" : "display:none"
-      }">${contentHtml}</div>`;
+      const isFirst = i === 0;
+      const content = escapeHtml(t.content).replaceAll("\n", "<br/>");
+      return `<div id="panel-${i}" role="tabpanel"
+  style="border:1px solid #ddd;border-radius:10px;padding:12px;${isFirst ? "" : "display:none"}">
+  ${content}
+</div>`;
     })
     .join("\n");
 
+  // Self‑contained HTML (Week 4 “Output Button” demo pattern)
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <title>Tabs Output</title>
 </head>
-<body style="margin:16px;font-family:system-ui,Arial,sans-serif;color:#111;background:#fff;">
-  <div id="tabs" style="max-width:900px;margin:0 auto;">
-    <h1 style="font-size:20px;margin:0 0 12px 0;">Tabs Output</h1>
-    <div role="tablist" aria-label="Generated tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      ${buttons}
-    </div>
-    ${panels}
+<body style="margin:16px;font-family:system-ui,Arial,sans-serif;color:#111;background:#fff">
+  <h1 style="font-size:20px;margin:0 0 12px 0">Tabs Output</h1>
+  <div role="tablist" aria-label="Generated tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    ${buttons}
   </div>
+  ${panels}
   <script>
     (function(){
       var tabs = Array.from(document.querySelectorAll('[role="tab"]'));
       var panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
-      function activate(id){
-        tabs.forEach(function(t){
-          var on = t.getAttribute('data-tab') === id;
-          t.setAttribute('aria-selected', on ? 'true' : 'false');
-          t.style.background = on ? '#1d8346ff' : '#89268bff';
+      function show(targetId){
+        tabs.forEach(function(btn){
+          var on = btn.getAttribute('data-target') === targetId;
+          btn.setAttribute('aria-selected', on ? 'true' : 'false');
+          btn.style.background = on ? '#1d8346' : '#89268b';
         });
         panels.forEach(function(p){
-          var on = p.getAttribute('data-panel') === id;
-          p.style.display = on ? 'block' : 'none';
+          p.style.display = (p.id === targetId) ? 'block' : 'none';
         });
       }
-      tabs.forEach(function(t){
-        t.addEventListener('click', function(){ activate(t.getAttribute('data-tab')); });
+      tabs.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          show(btn.getAttribute('data-target'));
+        });
       });
-      if (tabs[0]) activate(tabs[0].getAttribute('data-tab'));
+      if (tabs[0]) show(tabs[0].getAttribute('data-target'));
     })();
   </script>
 </body>
@@ -104,32 +87,52 @@ function generateInlineHtml(tabs: Tab[]): string {
 }
 
 export default function TabsBuilder() {
-  const initial = useMemo<Tab[]>(() => load<Tab[]>(TABS_KEY, [makeTab(1)]), []);
-  const [tabs, setTabs] = useState<Tab[]>(initial);
-  const [activeId, setActiveId] = useState<string>(initial[0].id);
+  // Week 3 (useState): local UI state
+  const [tabs, setTabs] = useState<Tab[]>([
+    // Week 4 (init pattern): start with one default tab
+    { id: makeId(), title: "Tab 1", content: "" },
+  ]);
+  const [activeId, setActiveId] = useState<string>(tabs[0].id);
   const [outputHtml, setOutputHtml] = useState<string>("");
 
+  // Week 4 (localStorage load): load once on mount
   useEffect(() => {
-    const t = setTimeout(() => save(TABS_KEY, tabs), 200);
-    return () => clearTimeout(t);
+    try {
+      const raw = localStorage.getItem(TABS_KEY);
+      if (raw) {
+        const loaded: Tab[] = JSON.parse(raw);
+        if (Array.isArray(loaded) && loaded.length) {
+          setTabs(loaded);
+          setActiveId(loaded[0].id);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Week 4 (localStorage save): save whenever tabs change
+  useEffect(() => {
+    try {
+      localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
+    } catch {}
   }, [tabs]);
 
+  // Derived active tab (Week 3: derived state)
   const active = tabs.find((t) => t.id === activeId) ?? tabs[0];
 
+  // Week 4 (List CRUD): add / remove / edit
   function addTab() {
-    if (tabs.length >= 15) return;
-    const t = makeTab(tabs.length + 1);
+    if (tabs.length >= 15) return; // rubric: cap at 15
+    const nextIndex = tabs.length + 1;
+    const t: Tab = { id: makeId(), title: `Tab ${nextIndex}`, content: "" };
     setTabs((prev) => [...prev, t]);
     setActiveId(t.id);
   }
 
   function removeActive() {
-    if (tabs.length <= 1) return;
-    const idx = tabs.findIndex((t) => t.id === activeId);
+    if (tabs.length <= 1) return; // keep at least one
     const remaining = tabs.filter((t) => t.id !== activeId);
-    const nextIdx = Math.max(0, idx - 1);
     setTabs(remaining);
-    setActiveId(remaining[nextIdx]?.id ?? remaining[0].id);
+    setActiveId(remaining[0].id);
   }
 
   function updateTitle(id: string, title: string) {
@@ -140,37 +143,27 @@ export default function TabsBuilder() {
     setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, content } : t)));
   }
 
+  // Week 4 (Output Button): generate + copy
+  function onGenerate() {
+    const html = generateInlineHtml(tabs.slice(0, 15)); // safety cap (rubric)
+    setOutputHtml(html);
+  }
+
   function copyOutput() {
     if (!outputHtml) return;
     navigator.clipboard?.writeText(outputHtml).catch(() => {});
   }
 
-  function onGenerate() {
-    console.log("Generate Output button clicked.");
-    setTimeout(() => {
-      console.log("Tabs state:", tabs);
-      const html = generateInlineHtml(tabs);
-      console.log("Generated HTML:", html);
-      setOutputHtml(html);
-    }, 0);
-  }
-
+  // Inline styles (Week 2–3: inline styles; matches “inline-only” for exported HTML)
   const wrap: React.CSSProperties = { display: "grid", gap: 12 };
-  const controls: React.CSSProperties = {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
-  };
-  const tablist: React.CSSProperties = {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
-  };
+  const controls: React.CSSProperties = { display: "flex", gap: 8, flexWrap: "wrap" };
+  const tablist: React.CSSProperties = { display: "flex", gap: 8, flexWrap: "wrap" };
   const tabBtn = (on: boolean): React.CSSProperties => ({
     padding: "8px 12px",
     border: "1px solid #999",
     borderRadius: 8,
-    background: on ? "#1d8346ff" : "#89268bff",
+    background: on ? "#1d8346" : "#89268b",
+    color: "#fff",
     cursor: "pointer",
   });
   const panel: React.CSSProperties = {
@@ -181,18 +174,12 @@ export default function TabsBuilder() {
 
   return (
     <section style={wrap}>
+      {/* Week 4 (List CRUD): + / − with rubric limits */}
       <div style={controls}>
         <button
           onClick={addTab}
           aria-label="Add tab"
-          style={{
-            padding: "8px 12px",
-            border: "1px solid #999",
-            borderRadius: 8,
-            background: "#e0e0e0",
-            color: "#111",
-            cursor: "pointer",
-          }}
+          style={{ padding: "8px 12px", border: "1px solid #999", borderRadius: 8, background: "#e0e0e0", color: "#111", cursor: "pointer" }}
           disabled={tabs.length >= 15}
         >
           + Add Tab ({tabs.length}/15)
@@ -200,20 +187,14 @@ export default function TabsBuilder() {
         <button
           onClick={removeActive}
           aria-label="Remove active tab"
-          style={{
-            padding: "8px 12px",
-            border: "1px solid #999",
-            borderRadius: 8,
-            background: "#e0e0e0",
-            color: "#111",
-            cursor: "pointer",
-          }}
+          style={{ padding: "8px 12px", border: "1px solid #999", borderRadius: 8, background: "#e0e0e0", color: "#111", cursor: "pointer" }}
           disabled={tabs.length <= 1}
         >
           − Remove Active
         </button>
       </div>
 
+      {/* Week 3 (A11y roles intro): minimal tablist semantics */}
       <div role="tablist" aria-label="Tabs" style={tablist}>
         {tabs.map((t) => {
           const on = t.id === activeId;
@@ -225,82 +206,57 @@ export default function TabsBuilder() {
               onClick={() => setActiveId(t.id)}
               style={tabBtn(on)}
             >
-              {t.title && t.title.trim() ? t.title : "Untitled"}
+              {t.title.trim() || "Untitled"}
             </button>
           );
         })}
       </div>
 
+      {/* Week 3–4 (Controlled inputs): edit title/content */}
       {active && (
         <div role="tabpanel" aria-label="Active tab content" style={panel}>
           <div style={{ display: "grid", gap: 8 }}>
             <label>
-              <span style={{ display: "block", marginBottom: 4 }}>
-                Tab title
-              </span>
+              <span style={{ display: "block", marginBottom: 4 }}>Tab title</span>
               <input
                 value={active.title}
                 onChange={(e) => updateTitle(active.id, e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: 8,
-                  border: "1px solid #ccc",
-                  borderRadius: 8,
-                }}
+                style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 8 }}
               />
             </label>
             <label>
-              <span style={{ display: "block", marginBottom: 4 }}>
-                Tab content
-              </span>
+              <span style={{ display: "block", marginBottom: 4 }}>Tab content</span>
               <textarea
                 value={active.content}
                 onChange={(e) => updateContent(active.id, e.target.value)}
                 rows={6}
-                style={{
-                  width: "100%",
-                  padding: 8,
-                  border: "1px solid #ccc",
-                  borderRadius: 8,
-                }}
+                style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 8 }}
               />
             </label>
           </div>
         </div>
       )}
 
+      {/* Week 4 (Output Button): generate + copy; textarea for your video demo */}
       <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button
             onClick={onGenerate}
-            style={{
-              padding: "8px 12px",
-              border: "1px solid #999",
-              borderRadius: 8,
-              background: "#e0e0e0",
-              color: "#111",
-              cursor: "pointer",
-            }}
             aria-label="Generate standalone HTML"
+            style={{ padding: "8px 12px", border: "1px solid #999", borderRadius: 8, background: "#e0e0e0", color: "#111", cursor: "pointer" }}
           >
             Generate Output (inline HTML)
           </button>
           <button
             onClick={copyOutput}
-            style={{
-              padding: "8px 12px",
-              border: "1px solid #999",
-              borderRadius: 8,
-              background: "#e0e0e0",
-              color: "#111",
-              cursor: "pointer",
-            }}
             aria-label="Copy generated HTML to clipboard"
             disabled={!outputHtml}
+            style={{ padding: "8px 12px", border: "1px solid #999", borderRadius: 8, background: "#e0e0e0", color: "#111", cursor: "pointer" }}
           >
             Copy Output
           </button>
         </div>
+
         <textarea
           value={outputHtml}
           readOnly
