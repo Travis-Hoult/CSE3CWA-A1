@@ -50,8 +50,9 @@ export default function Menu() {
         <ul>
           <li><Link href="/">Home</Link></li>
           <li><Link href="/about">About</Link></li>
-          <li><Link href="/races">Races</Link></li>
           <li><Link href="/prelab">Pre‑lab</Link></li>
+          <li><Link href="/escape">Escape Room</Link></li>
+          <li><Link href="/races">Coding Races</Link></li>
         </ul>
       </nav>
     </div>

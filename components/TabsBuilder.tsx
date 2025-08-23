@@ -87,34 +87,40 @@ function generateInlineHtml(tabs: Tab[]): string {
 }
 
 export default function TabsBuilder() {
-  // Week 3 (useState): local UI state
-  const [tabs, setTabs] = useState<Tab[]>([
-    // Week 4 (init pattern): start with one default tab
-    { id: makeId(), title: "Tab 1", content: "" },
-  ]);
-  const [activeId, setActiveId] = useState<string>(tabs[0].id);
-  const [outputHtml, setOutputHtml] = useState<string>("");
+  // --- Hydration-safe persistence pattern ---
 
-  // Week 4 (localStorage load): load once on mount
+  // Default tab used for server render and the very first client render
+  const DEFAULT_TABS: Tab[] = [{ id: makeId(), title: "Tab 1", content: "" }];
+
+  // 1) Render defaults first so server HTML matches first client HTML (prevents hydration mismatch)
+  const [tabs, setTabs] = useState<Tab[]>(DEFAULT_TABS);
+  const [activeId, setActiveId] = useState<string>(DEFAULT_TABS[0].id);
+
+  // Track when localStorage has been loaded (Week 4: localStorage)
+  const [loaded, setLoaded] = useState(false);
+
+  // 2) After mount, hydrate from localStorage (no SSR access to window/localStorage)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(TABS_KEY);
       if (raw) {
-        const loaded: Tab[] = JSON.parse(raw);
-        if (Array.isArray(loaded) && loaded.length) {
-          setTabs(loaded);
-          setActiveId(loaded[0].id);
+        const parsed = JSON.parse(raw) as Tab[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTabs(parsed);
+          setActiveId(parsed[0].id);
         }
       }
     } catch {}
+    setLoaded(true);
   }, []);
 
-  // Week 4 (localStorage save): save whenever tabs change
+  // 3) Save to localStorage only after we've finished loading to avoid clobbering saved data
   useEffect(() => {
+    if (!loaded) return;
     try {
       localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
     } catch {}
-  }, [tabs]);
+  }, [tabs, loaded]);
 
   // Derived active tab (Week 3: derived state)
   const active = tabs.find((t) => t.id === activeId) ?? tabs[0];
@@ -144,6 +150,8 @@ export default function TabsBuilder() {
   }
 
   // Week 4 (Output Button): generate + copy
+  const [outputHtml, setOutputHtml] = useState<string>("");
+
   function onGenerate() {
     const html = generateInlineHtml(tabs.slice(0, 15)); // safety cap (rubric)
     setOutputHtml(html);
@@ -153,6 +161,9 @@ export default function TabsBuilder() {
     if (!outputHtml) return;
     navigator.clipboard?.writeText(outputHtml).catch(() => {});
   }
+
+  // Optional: hide initial default flash while hydrating (uncomment if desired)
+  // if (!loaded) return null;
 
   // Inline styles (Week 2–3: inline styles; matches “inline-only” for exported HTML)
   const wrap: React.CSSProperties = { display: "grid", gap: 12 };
