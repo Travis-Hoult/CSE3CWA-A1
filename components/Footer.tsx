@@ -1,5 +1,6 @@
 "use client";
 
+// Simple footer with date and student id
 export default function Footer() {
   const now = new Date();
   const style: React.CSSProperties = {

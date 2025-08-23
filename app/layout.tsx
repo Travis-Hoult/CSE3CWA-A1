@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-
+import type React from "react";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import LastPageCookie from "../components/LastPageCookie";
 
 export const metadata: Metadata = {
   title: "CSE3CWA A1",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Basic page colours and font (kept inline for simplicity)
   const bodyStyle: React.CSSProperties = {
     margin: 0,
     background: "var(--bg, #ffffff)",
@@ -17,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
   };
 
+  // Constrain main content width and add padding
   const mainStyle: React.CSSProperties = {
     maxWidth: 1100,
     margin: "0 auto",
@@ -25,34 +28,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body style={bodyStyle}>
-        {/* Remember last visited page path on navigation */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                try {
-                  var set = function(name, value, days){
-                    var d = new Date();
-                    d.setTime(d.getTime() + (days*24*60*60*1000));
-                    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/';
-                  };
-                  set('lastMenu', location.pathname, 30);
-                  var pushState = history.pushState;
-                  history.pushState = function(){
-                    pushState.apply(this, arguments);
-                    set('lastMenu', location.pathname, 30);
-                  };
-                  window.addEventListener('popstate', function(){
-                    set('lastMenu', location.pathname, 30);
-                  });
-                } catch(e){}
-              })();
-            `,
-          }}
+      <head>
+        {/* Make Bootstrap available without changing our own styles */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         />
+      </head>
+      <body style={bodyStyle}>
+        {/* Writes a 'lastMenu' cookie whenever the path changes */}
+        <LastPageCookie />
 
-        {/* theme tokens (used by ThemeToggle later) */}
+        {/* Theme tokens for light/dark support via data-theme on <html> */}
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -62,15 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
 
-        {/* Header */}
-        <div style={{ borderBottom: "1px solid #ddd", position: "sticky", top: 0, background: "var(--bg)", zIndex: 2 }}>
+        {/* Header with title, nav, and controls */}
+        <div style={{ borderBottom: "1px solid #ddd", background: "var(--bg)" }}>
           <Header />
         </div>
 
-        {/* Page content */}
+        {/* Main routed page */}
         <main style={mainStyle}>{children}</main>
 
-        {/* Footer */}
+        {/* Simple footer */}
         <Footer />
       </body>
     </html>

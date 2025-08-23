@@ -1,7 +1,7 @@
-/* Container positions the dropdown relative to the button */
+/* Positions the dropdown relative to the button */
 .container { position: relative; }
 
-/* Button styled as a clean icon-only control */
+/* Icon-only hamburger button */
 .hamburger {
   cursor: pointer;
   display: flex;
@@ -9,12 +9,12 @@
   justify-content: space-around;
   width: 30px;
   height: 30px;
-  background: transparent; /* no button background */
-  border: none;            /* no border (per requirement) */
+  background: transparent;
+  border: none;
   padding: 0;
 }
 
-/* Bars animate into an X when open */
+/* Bars that rotate into an X when open */
 .bar, .barOpen {
   width: 100%;
   height: 4px;
@@ -27,7 +27,7 @@
 .barOpen:nth-child(2) { opacity: 0; }
 .barOpen:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-/* Menu panel */
+/* Menu panel: hidden by default, absolute when open */
 .menu { 
   display: none;
 }
@@ -36,7 +36,7 @@
   display: block;
   position: absolute;
   top: 40px;
-  right: 0; /* align to button */
+  right: 0;
   background-color: var(--bg, #fff);
   color: var(--fg, #333);
   border: 1px solid #ddd;
@@ -47,13 +47,13 @@
   animation: pop 120ms ease;
 }
 
-/* List + items */
+/* List reset + item styles */
 .menuOpen ul { list-style: none; padding: 0; margin: 0; }
 .menuOpen li { padding: 8px 12px; }
 .menuOpen li a { text-decoration: none; color: inherit; display: block; }
 .menuOpen li:hover { background: rgba(0,0,0,.05); }
 
-/* Subtle pop-in */
+/* Small pop-in animation */
 @keyframes pop {
   from { opacity: 0; transform: translateY(-2px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }

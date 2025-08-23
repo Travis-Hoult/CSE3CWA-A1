@@ -1,8 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import Menu from "./Menu";
 import ThemeToggle from "./ThemeToggle";
 
+// Top header with title, nav, and controls
 export default function Header() {
   const outerWrap: React.CSSProperties = {
     display: "grid",
@@ -60,19 +62,23 @@ export default function Header() {
 
   return (
     <header style={outerWrap}>
+      {/* Student id badge */}
       <div style={badgeRow}>
         <span style={badge}>Student #20221016</span>
       </div>
+
+      {/* App title */}
       <div style={titleRow}>
         <div style={title}>CSE3CWA — Assignment 1</div>
       </div>
+
+      {/* Nav links and controls */}
       <div style={navBar}>
         <nav style={navLinks}>
           <Link href="/">Tabs</Link>
           <Link href="/prelab">Pre-lab Questions</Link>
           <Link href="/escape">Escape Room</Link>
           <Link href="/races">Coding Races</Link>
-        
         </nav>
         <div style={rightControls}>
           <ThemeToggle />

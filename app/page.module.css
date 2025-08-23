@@ -1,3 +1,4 @@
+/* Page layout and spacing */
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
@@ -16,6 +17,7 @@
   font-family: var(--font-geist-sans);
 }
 
+/* Dark scheme variables */
 @media (prefers-color-scheme: dark) {
   .page {
     --gray-rgb: 255, 255, 255;
@@ -27,6 +29,7 @@
   }
 }
 
+/* Main content area */
 .main {
   display: flex;
   flex-direction: column;
@@ -34,8 +37,8 @@
   grid-row-start: 2;
 }
 
+/* Ordered list typography */
 .main ol {
-  font-family: var(--font-geist-mono);
   padding-left: 0;
   margin: 0;
   font-size: 14px;
@@ -44,33 +47,33 @@
   list-style-position: inside;
 }
 
+/* List spacing */
 .main li:not(:last-of-type) {
   margin-bottom: 8px;
 }
 
+/* Inline code style */
 .main code {
-  font-family: inherit;
   background: var(--gray-alpha-100);
   padding: 2px 4px;
   border-radius: 4px;
   font-weight: 600;
 }
 
+/* CTA buttons row */
 .ctas {
   display: flex;
   gap: 16px;
 }
 
+/* CTA link base style */
 .ctas a {
   appearance: none;
   border-radius: 128px;
   height: 48px;
   padding: 0 20px;
   border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -80,34 +83,39 @@
   font-weight: 500;
 }
 
+/* Primary button look */
 a.primary {
   background: var(--foreground);
   color: var(--background);
   gap: 8px;
 }
 
+/* Secondary button look */
 a.secondary {
   border-color: var(--gray-alpha-200);
   min-width: 158px;
 }
 
+/* Footer row */
 .footer {
   grid-row-start: 3;
   display: flex;
   gap: 24px;
 }
 
+/* Footer links */
 .footer a {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Footer images should not shrink */
 .footer img {
   flex-shrink: 0;
 }
 
-/* Enable hover only on non-touch devices */
+/* Hover effects only for pointer devices */
 @media (hover: hover) and (pointer: fine) {
   a.primary:hover {
     background: var(--button-primary-hover);
@@ -125,6 +133,7 @@ a.secondary {
   }
 }
 
+/* Small screens */
 @media (max-width: 600px) {
   .page {
     padding: 32px;
@@ -160,6 +169,7 @@ a.secondary {
   }
 }
 
+/* Invert logo in dark mode if used */
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert();

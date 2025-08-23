@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-// Week 3–4 (TypeScript + React state): typed shape for a tab item
+// Each tab has an id, title, and content
 type Tab = { id: string; title: string; content: string };
 
-// Week 4 (Browser APIs → localStorage): single key for persistence
+// Key for saving tabs to localStorage
 const TABS_KEY = "tabs-data";
 
-// Week 4 (List CRUD): quick id generator (simple + readable)
+// Simple id generator (good enough for this demo)
 function makeId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-// Week 4 (Output / Security): escape content used inside HTML
+// Escape HTML so user input is safe when injected into a string
 function escapeHtml(s: string) {
   return s
     .replaceAll("&", "&amp;")
@@ -22,13 +22,12 @@ function escapeHtml(s: string) {
     .replaceAll('"', "&quot;");
 }
 
-// Week 4 (Output Button requirement): produce standalone HTML with only inline CSS (no classes)
+// Build a self-contained HTML file with inline styles only
 function generateInlineHtml(tabs: Tab[]): string {
   const buttons = tabs
     .map((t, i) => {
       const isFirst = i === 0;
       const label = t.title.trim() || `Untitled ${i + 1}`;
-      // Minimal ARIA roles kept (Week 3 a11y intro); inline styles only (rubric)
       return `<button role="tab" data-target="panel-${i}" aria-selected="${isFirst ? "true" : "false"}"
   style="padding:8px 12px;border:1px solid #999;border-radius:8px;background:${isFirst ? "#1d8346" : "#89268b"};color:#fff;cursor:pointer">
   ${escapeHtml(label)}
@@ -47,7 +46,7 @@ function generateInlineHtml(tabs: Tab[]): string {
     })
     .join("\n");
 
-  // Self‑contained HTML (Week 4 “Output Button” demo pattern)
+  // Minimal HTML page with a tiny script for tab switching
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -87,19 +86,16 @@ function generateInlineHtml(tabs: Tab[]): string {
 }
 
 export default function TabsBuilder() {
-  // --- Hydration-safe persistence pattern ---
-
-  // Default tab used for server render and the very first client render
+  // Start with one default tab for initial render
   const DEFAULT_TABS: Tab[] = [{ id: makeId(), title: "Tab 1", content: "" }];
 
-  // 1) Render defaults first so server HTML matches first client HTML (prevents hydration mismatch)
   const [tabs, setTabs] = useState<Tab[]>(DEFAULT_TABS);
   const [activeId, setActiveId] = useState<string>(DEFAULT_TABS[0].id);
 
-  // Track when localStorage has been loaded (Week 4: localStorage)
+  // Track when saved tabs have been loaded
   const [loaded, setLoaded] = useState(false);
 
-  // 2) After mount, hydrate from localStorage (no SSR access to window/localStorage)
+  // Load from localStorage after mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(TABS_KEY);
@@ -114,7 +110,7 @@ export default function TabsBuilder() {
     setLoaded(true);
   }, []);
 
-  // 3) Save to localStorage only after we've finished loading to avoid clobbering saved data
+  // Save tabs to localStorage when they change (after load)
   useEffect(() => {
     if (!loaded) return;
     try {
@@ -122,50 +118,52 @@ export default function TabsBuilder() {
     } catch {}
   }, [tabs, loaded]);
 
-  // Derived active tab (Week 3: derived state)
+  // Find the active tab
   const active = tabs.find((t) => t.id === activeId) ?? tabs[0];
 
-  // Week 4 (List CRUD): add / remove / edit
+  // Add a new tab (limit to 15)
   function addTab() {
-    if (tabs.length >= 15) return; // rubric: cap at 15
+    if (tabs.length >= 15) return;
     const nextIndex = tabs.length + 1;
     const t: Tab = { id: makeId(), title: `Tab ${nextIndex}`, content: "" };
     setTabs((prev) => [...prev, t]);
     setActiveId(t.id);
   }
 
+  // Remove the current tab (keep at least one)
   function removeActive() {
-    if (tabs.length <= 1) return; // keep at least one
+    if (tabs.length <= 1) return;
     const remaining = tabs.filter((t) => t.id !== activeId);
     setTabs(remaining);
     setActiveId(remaining[0].id);
   }
 
+  // Update the title of a tab
   function updateTitle(id: string, title: string) {
     setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
   }
 
+  // Update the content of a tab
   function updateContent(id: string, content: string) {
     setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, content } : t)));
   }
 
-  // Week 4 (Output Button): generate + copy
+  // Hold generated HTML for preview/copy
   const [outputHtml, setOutputHtml] = useState<string>("");
 
+  // Build the standalone HTML string
   function onGenerate() {
-    const html = generateInlineHtml(tabs.slice(0, 15)); // safety cap (rubric)
+    const html = generateInlineHtml(tabs.slice(0, 15));
     setOutputHtml(html);
   }
 
+  // Copy the generated HTML to clipboard
   function copyOutput() {
     if (!outputHtml) return;
     navigator.clipboard?.writeText(outputHtml).catch(() => {});
   }
 
-  // Optional: hide initial default flash while hydrating (uncomment if desired)
-  // if (!loaded) return null;
-
-  // Inline styles (Week 2–3: inline styles; matches “inline-only” for exported HTML)
+  // Minimal inline styles for the editor UI
   const wrap: React.CSSProperties = { display: "grid", gap: 12 };
   const controls: React.CSSProperties = { display: "flex", gap: 8, flexWrap: "wrap" };
   const tablist: React.CSSProperties = { display: "flex", gap: 8, flexWrap: "wrap" };
@@ -185,7 +183,7 @@ export default function TabsBuilder() {
 
   return (
     <section style={wrap}>
-      {/* Week 4 (List CRUD): + / − with rubric limits */}
+      {/* Add/remove tab actions */}
       <div style={controls}>
         <button
           onClick={addTab}
@@ -205,7 +203,7 @@ export default function TabsBuilder() {
         </button>
       </div>
 
-      {/* Week 3 (A11y roles intro): minimal tablist semantics */}
+      {/* Tab buttons */}
       <div role="tablist" aria-label="Tabs" style={tablist}>
         {tabs.map((t) => {
           const on = t.id === activeId;
@@ -223,7 +221,7 @@ export default function TabsBuilder() {
         })}
       </div>
 
-      {/* Week 3–4 (Controlled inputs): edit title/content */}
+      {/* Active tab editor */}
       {active && (
         <div role="tabpanel" aria-label="Active tab content" style={panel}>
           <div style={{ display: "grid", gap: 8 }}>
@@ -248,7 +246,7 @@ export default function TabsBuilder() {
         </div>
       )}
 
-      {/* Week 4 (Output Button): generate + copy; textarea for your video demo */}
+      {/* Output actions and preview area */}
       <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button
@@ -256,7 +254,7 @@ export default function TabsBuilder() {
             aria-label="Generate standalone HTML"
             style={{ padding: "8px 12px", border: "1px solid #999", borderRadius: 8, background: "#e0e0e0", color: "#111", cursor: "pointer" }}
           >
-            Generate Output (inline HTML)
+            Generate Output
           </button>
           <button
             onClick={copyOutput}
@@ -271,7 +269,7 @@ export default function TabsBuilder() {
         <textarea
           value={outputHtml}
           readOnly
-          placeholder="Click 'Generate Output' to see the HTML here. Copy & paste this into a .html file and open it in a browser."
+          placeholder="Click 'Generate Output' to see the HTML here. Copy and paste into a .html file."
           rows={10}
           style={{
             width: "100%",

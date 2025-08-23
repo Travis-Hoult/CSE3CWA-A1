@@ -1,14 +1,14 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 
+// Light/dark theme type
 type Theme = "light" | "dark";
 
-
+// Key for saving theme
 const THEME_KEY = "theme";
 
-
+// Read a saved theme from localStorage
 function readSavedTheme(): Theme | null {
   try {
     const v = localStorage.getItem(THEME_KEY);
@@ -18,25 +18,25 @@ function readSavedTheme(): Theme | null {
   }
 }
 
-
+// Apply theme by setting data-theme on <html>
 function applyTheme(theme: Theme) {
   if (typeof document !== "undefined") {
     document.documentElement.dataset.theme = theme;
   }
 }
 
+// Button that toggles between light and dark themes
 export default function ThemeToggle() {
-
   const [theme, setTheme] = useState<Theme | undefined>(undefined);
 
-  
+  // Set initial theme on mount
   useEffect(() => {
     const saved = readSavedTheme() ?? "light";
     setTheme(saved);
     applyTheme(saved);
   }, []);
 
- 
+  // Save and apply theme when it changes
   useEffect(() => {
     if (!theme) return;
     try {
@@ -45,7 +45,7 @@ export default function ThemeToggle() {
     applyTheme(theme);
   }, [theme]);
 
-
+  // Disabled button while theme is loading
   if (!theme) {
     return (
       <button
@@ -65,6 +65,7 @@ export default function ThemeToggle() {
     );
   }
 
+  // Compute the next theme and label
   const next = theme === "light" ? "dark" : "light";
   const label = theme === "light" ? "Switch to dark mode" : "Switch to light mode";
 
